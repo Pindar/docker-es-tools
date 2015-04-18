@@ -1,7 +1,7 @@
-FROM ubuntu:14.04
+FROM gliderlabs/alpine
+MAINTAINER Simon Dittlmann
 
-RUN apt-get update && \
-  apt-get install -qq -y curl
+RUN apk-install bash curl grep
 
 ADD elasticsearch-optimize-index.sh /elasticsearch-optimize-index.sh
 ADD elasticsearch-remove-old-indices.sh elasticsearch-remove-old-indices.sh
