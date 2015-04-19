@@ -5,6 +5,7 @@
 # if $1 = all then optimize all indicies
 
 ELASTICSEARCH=${ELASTICSEARCH:-"http://localhost:9200"}
+GREP="logstash"
 
 esindex=`curl -s "$ELASTICSEARCH/_status?pretty=true" | grep $GREP | grep -v \"index\" | sort -r | awk -F\" {'print $2'}`
 # Grab yesterday's values
@@ -18,8 +19,13 @@ yesterday="$Y.$M.$D"
 if [ "x$1" = "xall" ]
 then
     # Loop through all ES indicies except today
-    for index in `ls $esindex | grep -v "$today"`
+    for index in $esindex
     do
+    	if [[ `echo $index | grep $today` ]]; then
+    		# skip today
+    		continue;
+    	fi
+    	        
         # Run through all the indicies and optimize them
         echo "Optimizing $index"
         curl -XPOST "$ELASTICSEARCH/$index/_optimize?max_num_segments=2"
